@@ -28,6 +28,8 @@ nav {
   list-style: none;
   display: flex;
   gap: 1rem;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links a {
@@ -146,11 +148,146 @@ main {
   to { opacity: 1; transform: translateY(0); }
 }
 
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
 .about-section {
   background: #fafaff;
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.discussions-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.discussions-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+.discussion-topic {
+  display: flex;
+  align-items: center;
+  background: #f7faff;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 12px rgba(106, 90, 205, 0.07);
+  padding: 1.5rem;
+  transition: box-shadow 0.3s;
+}
+.discussion-topic:hover {
+  box-shadow: 0 8px 24px rgba(106, 90, 205, 0.13);
+}
+.topic-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-right: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.topic-content h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.3rem;
+  color: #6a5acd;
+}
+.pastel-btn {
+  background: linear-gradient(90deg, #f7c9e3 0%, #a3c9f7 100%);
+  color: #6a5acd;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  transition: background 0.3s;
+}
+.pastel-btn:hover {
+  background: linear-gradient(90deg, #a3c9f7 0%, #f7c9e3 100%);
+}
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(163, 201, 247, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 1.2rem;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(106, 90, 205, 0.13);
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+  position: relative;
+}
+.modal-content .close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  color: #6a5acd;
+  cursor: pointer;
+}
+.modal-input {
+  width: 100%;
+  min-height: 60px;
+  margin: 1rem 0;
+  border-radius: 1rem;
+  border: 1px solid #e0e7ff;
+  padding: 0.7rem;
+  font-size: 1rem;
+  resize: vertical;
+}
+.auth-container {
+  max-width: 400px;
+  margin: 3rem auto;
+  background: #f7faff;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 12px rgba(106, 90, 205, 0.07);
+  padding: 2rem 2.5rem;
+  text-align: center;
+}
+.auth-title {
+  color: #6a5acd;
+  margin-bottom: 1.5rem;
+}
+.auth-form label {
+  display: block;
+  margin: 1rem 0 0.3rem 0;
+  color: #6a5acd;
+  font-weight: 500;
+}
+.auth-form input {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 1rem;
+  border: 1px solid #e0e7ff;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  background: #fff;
+}
+.auth-form .btn {
+  width: 100%;
+  margin-top: 1rem;
+}
+.auth-switch {
+  margin-top: 1.5rem;
+  color: #6a5acd;
+}
+.link-primary {
+  color: #a3c9f7;
+  text-decoration: underline;
 }
 
 @media (min-width: 600px) {
@@ -170,5 +307,11 @@ main {
   }
   .chatbox {
     width: 90%;
+  }
+}
+
+@media (min-width: 700px) {
+  .discussions-list {
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }

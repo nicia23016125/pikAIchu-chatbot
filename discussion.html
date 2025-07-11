@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Discussions | Soft Pastel Site</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <nav>
+    <div class="logo">🧠 Pikaichu</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="discussion.html" class="active">Discussions</a></li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+  </nav>
+  <main class="container fade-in" tabindex="-1">
+    <header class="discussions-header">
+      <h1>Community Discussions</h1>
+      <p>Connect, share, and support each other on topics that matter most to you.</p>
+    </header>
+    <section class="discussions-list" aria-label="List of discussion topics">
+      <article class="discussion-topic" tabindex="0" role="article" aria-describedby="desc-school">
+        <div class="topic-icon" style="background: #a3c9f7;"><span>📚</span></div>
+        <div class="topic-content">
+          <h2>School Struggles</h2>
+          <p id="desc-school">Discuss your challenges with exams, assignments, and motivation.</p>
+          <button class="btn pastel-btn" onclick="openModal('School Struggles')">Join Conversation</button>
+        </div>
+      </article>
+      <article class="discussion-topic" tabindex="0" role="article" aria-describedby="desc-family">
+        <div class="topic-icon" style="background: #f7c9e3;"><span>🏡</span></div>
+        <div class="topic-content">
+          <h2>Family</h2>
+          <p id="desc-family">Talk about family relationships, support, and advice.</p>
+          <button class="btn pastel-btn" onclick="openModal('Family')">Join Conversation</button>
+        </div>
+      </article>
+      <article class="discussion-topic" tabindex="0" role="article" aria-describedby="desc-mental">
+        <div class="topic-icon" style="background: #c9f7d1;"><span>🧠</span></div>
+        <div class="topic-content">
+          <h2>Mental Health</h2>
+          <p id="desc-mental">Share your thoughts and get support for mental wellness.</p>
+          <button class="btn pastel-btn" onclick="openModal('Mental Health')">Join Conversation</button>
+        </div>
+      </article>
+    </section>
+  </main>
+  <div id="modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modal-title"></h2>
+      <p>Welcome to the <span id="modal-topic"></span> discussion! Share your thoughts below:</p>
+      <textarea class="modal-input" placeholder="Type your message..."></textarea>
+      <button class="btn pastel-btn" onclick="closeModal()">Send</button>
+    </div>
+  </div>
+  <script>
+    function openModal(topic) {
+      document.getElementById('modal').style.display = 'flex';
+      document.getElementById('modal-title').textContent = topic;
+      document.getElementById('modal-topic').textContent = topic;
+    }
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
