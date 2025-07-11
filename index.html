@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="pikaichu-icon.png">
+  <title>Heal and Feel with Pikaichu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <div class="logo">🧠 Pikaichu</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+  <main class="fade-in">
+    <section class="hero">
+      <h1>Heal and Feel with Pikaichu</h1>
+      <p>Your gentle mental health buddy 💛</p>
+      <div class="cta">
+        <button class="chat-btn" onclick="toggleChat()">Talk to Pikaichu</button>
+      </div>
+    </section>
+    <section class="features">
+      <div class="feature-box">
+        <h2>Empathetic Responses</h2>
+        <p>Pikaichu understands your mood and replies with care.</p>
+      </div>
+      <div class="feature-box">
+        <h2>Emotional Tips</h2>
+        <p>Breathing, journaling, and affirmations tailored for you.</p>
+      </div>
+      <div class="feature-box">
+        <h2>Always Private</h2>
+        <p>Your chats stay between you and Pikaichu.</p>
+      </div>
+    </section>
+  </main>
+  <div class="chatbox" id="chatbox">
+    <div class="chat-header">💬 Chat with Pikaichu</div>
+    <div class="chat-body">
+      <p><strong>Pikaichu:</strong> Hi friend! How are you feeling today?</p>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Type how you feel...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

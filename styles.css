@@ -1,0 +1,174 @@
+/* styles.css */
+
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fefefe;
+  color: #333;
+  transition: background 0.3s;
+}
+
+nav {
+  background-color: #ffffff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.logo {
+  font-weight: 500;
+  font-size: 1.4rem;
+  color: #6a5acd;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #6a5acd;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  transition: background 0.3s;
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+  background-color: #e0e7ff;
+}
+
+main {
+  padding: 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.hero {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: #f0f4ff;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 16px rgba(106, 90, 205, 0.1);
+}
+
+.cta {
+  margin-top: 1.5rem;
+}
+
+.chat-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #fff0b3;
+  border: none;
+  border-radius: 2rem;
+  font-size: 1rem;
+  color: #6a5acd;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.chat-btn:hover {
+  background-color: #ffe066;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.feature-box {
+  background-color: #fff9f9;
+  padding: 1.5rem;
+  border-radius: 1.2rem;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+}
+
+.chatbox {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  width: 300px;
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.chatbox .chat-header {
+  background-color: #dcd6f7;
+  padding: 1rem;
+  font-weight: bold;
+}
+
+.chatbox .chat-body {
+  padding: 1rem;
+  height: 150px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+}
+
+.chatbox .chat-input {
+  display: flex;
+  border-top: 1px solid #eee;
+}
+
+.chatbox input[type="text"] {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  outline: none;
+}
+
+.chatbox button {
+  background-color: #c0b9f7;
+  border: none;
+  padding: 0 1rem;
+  cursor: pointer;
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.about-section {
+  background: #fafaff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+@media (min-width: 600px) {
+  .features {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+  }
+  .chatbox {
+    width: 90%;
+  }
+}
