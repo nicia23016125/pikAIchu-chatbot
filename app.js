@@ -50,6 +50,30 @@ window.addEventListener('DOMContentLoaded', () => {
   document.body.classList.add('fade-in');
 });
 
+//login
+
+// login form logic
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.querySelector('.auth-form');
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', function (e) {
+      e.preventDefault(); // prevent page reload
+
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      if (email === '' || password === '') {
+        alert('Please fill in both email and password.');
+      } else {
+        // simulate login success — replace with real login logic later
+        alert('🎉 Login successful!');
+        window.location.href = 'index.html'; // redirect to homepage or dashboard
+      }
+    });
+  }
+});
+
 // Register PWA Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
