@@ -3,9 +3,11 @@
   <div class="quote-box">
     <img id="quote-image" src="fallback.jpg" alt="Motivational Background" />
     <blockquote id="quote-text">Loading quote...</blockquote>
+    <button class="mic-btn" id="mic-daily" title="Listen to quote" style="margin-left:0.5rem;"><span class="mic-icon">🎤</span></button>
     <cite id="quote-author"></cite>
     <button id="show-more-btn" class="pastel-btn" style="margin-top:1rem;background:#ffd6e0;color:#6a5acd;border-radius:1rem;box-shadow:0 2px 8px #f9f9fb;">Show More Quotes</button>
     <div id="more-quotes" style="max-height:0;overflow:hidden;transition:max-height 0.6s cubic-bezier(.4,0,.2,1);margin-top:1rem;background:#f9f9fb;border-radius:1.5rem;box-shadow:0 0 12px #f3eaff;padding:1rem 0;"></div>
+    <div id="tts-message" style="margin-top:1rem;color:#b36b6b;font-size:1rem;display:none;"></div>
   </div>
 </section>
 
@@ -48,11 +50,49 @@ function displayQuote() {
   document.getElementById("quote-image").src = image;
 }
 
+function speakQuote(text) {
+  const msgDiv = document.getElementById('tts-message');
+  msgDiv.style.display = 'none';
+  if (!('speechSynthesis' in window)) {
+    msgDiv.textContent = "Your browser doesn't support voice playback.";
+    msgDiv.style.display = 'block';
+    return;
+  }
+  const utter = new window.SpeechSynthesisUtterance(text);
+  // Try to select a gentle female English voice
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
+                    voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('woman')) ||
+                    voices.find(v => v.lang.startsWith('en') && v.gender === 'female') ||
+                    voices.find(v => v.lang.startsWith('en'));
+  if (preferred) utter.voice = preferred;
+  utter.rate = 1;
+  utter.pitch = 1.1;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utter);
+}
+document.getElementById('mic-daily').onclick = function() {
+  const text = document.getElementById('quote-text').textContent;
+  speakQuote(text);
+};
 function renderMoreQuotes() {
   const moreQuotesDiv = document.getElementById('more-quotes');
   const dailyIndex = new Date().getDate() % quotes.length;
   const extraQuotes = quotes.filter((_, i) => i !== dailyIndex);
-  moreQuotesDiv.innerHTML = extraQuotes.map(q => `<div style='margin-bottom:1.2rem;'><blockquote style='color:#6a5acd;font-size:1rem;'>"${q.text}"</blockquote><cite style='color:#888;'>— ${q.author}</cite></div>`).join('');
+  moreQuotesDiv.innerHTML = extraQuotes.map((q, idx) => `
+    <div style='margin-bottom:1.2rem;display:flex;align-items:center;justify-content:center;'>
+      <blockquote style='color:#6a5acd;font-size:1rem;margin:0;'>"${q.text}"</blockquote>
+      <button class='mic-btn' id='mic-extra-${idx}' title='Listen to quote' style='margin-left:0.5rem;'><span class='mic-icon'>🎤</span></button>
+      <cite style='color:#888;margin-left:0.5rem;'>— ${q.author}</cite>
+    </div>
+  `).join('');
+  // Add TTS listeners for extra quotes
+  extraQuotes.forEach((q, idx) => {
+    setTimeout(() => {
+      const btn = document.getElementById('mic-extra-' + idx);
+      if (btn) btn.onclick = function() { speakQuote(q.text); };
+    }, 0);
+  });
 }
 document.getElementById('show-more-btn').onclick = function() {
   const moreQuotesDiv = document.getElementById('more-quotes');
@@ -124,5 +164,27 @@ cite {
 .pastel-btn:hover {
   background: #ffe6f2;
   color: #4b3f72;
+}
+.mic-btn {
+  background: #ffe6f2;
+  border: none;
+  border-radius: 50%;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #f9f9fb;
+  transition: background 0.3s, box-shadow 0.3s;
+  margin-left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.mic-btn:hover, .mic-btn:focus {
+  background: #ffd6e0;
+  box-shadow: 0 0 0 2px #b3c2f2;
+}
+.mic-icon {
+  font-size: 1.3rem;
+  color: #6a5acd;
+  transition: color 0.3s;
 }
 </style>
