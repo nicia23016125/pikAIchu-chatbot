@@ -50,25 +50,51 @@ window.addEventListener('DOMContentLoaded', () => {
   document.body.classList.add('fade-in');
 });
 
-//login
+// SIGNUP LOGIC
 
-// login form logic
+document.addEventListener('DOMContentLoaded', () => {
+  const signupForm = document.querySelector('.auth-form');
+  if (signupForm && document.getElementById('signup-email')) {
+    signupForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+      if (!name || !email || !password) {
+        alert('Please fill in all fields.');
+        return;
+      }
+      // Save user data to localStorage
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.find(u => u.email === email)) {
+        alert('Email already registered.');
+        return;
+      }
+      users.push({ name, email, password });
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('🎉 Signup successful! You can now log in.');
+      window.location.href = 'login.html';
+    });
+  }
+});
+
+// LOGIN LOGIC
+
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.querySelector('.auth-form');
-
-  if (loginForm) {
+  if (loginForm && document.getElementById('login-email')) {
     loginForm.addEventListener('submit', function (e) {
-      e.preventDefault(); // prevent page reload
-
+      e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value.trim();
-
-      if (email === '' || password === '') {
-        alert('Please fill in both email and password.');
-      } else {
-        // simulate login success — replace with real login logic later
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.email === email && u.password === password);
+      if (user) {
+        localStorage.setItem('loggedInUser', JSON.stringify(user));
         alert('🎉 Login successful!');
-        window.location.href = 'index.html'; // redirect to homepage or dashboard
+        window.location.href = 'index.html';
+      } else {
+        alert('Invalid email or password.');
       }
     });
   }
@@ -122,6 +148,70 @@ map.fitBounds(bounds, { padding: [30, 30] });
       0.95: '#990000'
     }
   }).addTo(map);
+});
+
+// DISCUSSION LOGIC
+
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('modal');
+  const discussionInput = document.querySelector('.modal-input');
+  const sendBtn = modal ? modal.querySelector('button.pastel-btn') : null;
+  const discussionsList = document.querySelector('.discussions-list');
+
+  // Load discussions from localStorage
+  function loadDiscussions() {
+    let discussions = JSON.parse(localStorage.getItem('discussions') || '[]');
+    // Remove old dynamic discussions
+    document.querySelectorAll('.discussion-dynamic').forEach(el => el.remove());
+    discussions.forEach(disc => {
+      const article = document.createElement('article');
+      article.className = 'discussion-topic discussion-dynamic';
+      article.innerHTML = `
+        <div class="topic-icon" style="background: #ffe066;"><span>💬</span></div>
+        <div class="topic-content">
+          <h2>${disc.title}</h2>
+          <p>${disc.text.replace(/\n/g, '<br>')}</p>
+          <div class="discussion-meta">${disc.author ? 'By ' + disc.author : 'By Guest'}</div>
+        </div>
+      `;
+      discussionsList.appendChild(article);
+    });
+  }
+  if (discussionsList) loadDiscussions();
+
+  // Prevent Enter from submitting, allow new lines
+  if (discussionInput) {
+    discussionInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        // Insert newline
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.substring(0, start) + '\n' + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 1;
+        e.preventDefault();
+      }
+    });
+  }
+
+  // Handle discussion submit
+  if (sendBtn && discussionInput) {
+    sendBtn.onclick = function() {
+      const text = discussionInput.value.trim();
+      if (!text) return;
+      const topic = document.getElementById('modal-title').textContent || 'General';
+      let user = JSON.parse(localStorage.getItem('loggedInUser') || 'null');
+      let discussions = JSON.parse(localStorage.getItem('discussions') || '[]');
+      discussions.push({
+        title: topic,
+        text,
+        author: user ? user.name : ''
+      });
+      localStorage.setItem('discussions', JSON.stringify(discussions));
+      loadDiscussions();
+      discussionInput.value = '';
+      document.getElementById('modal').style.display = 'none';
+    };
+  }
 });
 
 // Register PWA Service Worker
