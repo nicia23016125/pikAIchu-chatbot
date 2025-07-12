@@ -74,6 +74,56 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+  const mapContainer = document.getElementById('risk-map');
+  if (!mapContainer) return;
+
+const map = L.map('risk-map').setView([27, 130], 4.5); // lat, lng, zoom
+map.setView([30, 132], 5); // more zoomed into those 3 countries
+map.setMaxBounds([
+  [0, 90],    // Southwest corner
+  [50, 150]   // Northeast corner
+]);
+
+  // Clean, English-labeled tile (CartoDB Positron)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 18,
+  }).addTo(map);
+
+  // Heatmap data: [lat, lng, intensity]
+  const heatData = [
+    [37.5665, 126.9780, 0.95], // Seoul
+    [35.6895, 139.6917, 0.85], // Tokyo
+    [1.3521, 103.8198, 0.7],   // Singapore
+    [35.1796, 129.0756, 0.75], // Busan
+    [34.6937, 135.5023, 0.6],  // Osaka
+    [35.0116, 135.7681, 0.5],  // Kyoto
+    [36.2048, 138.2529, 0.4],  // Central Japan
+    [36.5, 127.8, 0.6]         // Central South Korea
+  ];
+const bounds = L.latLngBounds([
+  [1.35, 103.82],   // Singapore
+  [37.56, 126.98],  // Seoul
+  [35.68, 139.69]   // Tokyo
+]);
+map.fitBounds(bounds, { padding: [30, 30] });
+
+  L.heatLayer(heatData, {
+    radius: 30,
+    blur: 25,
+    maxZoom: 10,
+    gradient: {
+      0.2: '#ffcccc',
+      0.4: '#ff6666',
+      0.7: '#cc0000',
+      0.95: '#990000'
+    }
+  }).addTo(map);
+});
+
 // Register PWA Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {

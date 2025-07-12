@@ -4,6 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
+ <!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Optional: custom CSS -->
+<style>
+  #risk-map {
+    height: 450px;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+  }
+</style>
+
+
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="pikaichu-icon.png">
   <title>Heal and Feel with Pikaichu</title>
@@ -30,6 +44,15 @@
         <button class="chat-btn" onclick="toggleChat()">Talk to Pikaichu</button>
       </div>
     </section>
+   
+
+    <section class="map-section fade-in">
+  <h2>🌍 Suicide Risk Map</h2>
+  <p>This heatmap highlights areas in East Asia with higher suicide risk. Redder zones indicate more critical levels.</p>
+  <div id="risk-map"></div>
+</section>
+
+
     <section class="features">
       <div class="feature-box">
         <h2>Empathetic Responses</h2>
@@ -56,5 +79,12 @@
     </div>
   </div>
   <script src="app.js"></script>
+  <!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+<div class="map-legend">
+  <small>🔴 Higher intensity = greater suicide risk</small>
+</div>
+
 </body>
 </html>
