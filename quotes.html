@@ -1,0 +1,128 @@
+<!-- Add this in your HTML file inside the <body> where you want it -->
+<section id="daily-quote">
+  <div class="quote-box">
+    <img id="quote-image" src="fallback.jpg" alt="Motivational Background" />
+    <blockquote id="quote-text">Loading quote...</blockquote>
+    <cite id="quote-author"></cite>
+    <button id="show-more-btn" class="pastel-btn" style="margin-top:1rem;background:#ffd6e0;color:#6a5acd;border-radius:1rem;box-shadow:0 2px 8px #f9f9fb;">Show More Quotes</button>
+    <div id="more-quotes" style="max-height:0;overflow:hidden;transition:max-height 0.6s cubic-bezier(.4,0,.2,1);margin-top:1rem;background:#f9f9fb;border-radius:1.5rem;box-shadow:0 0 12px #f3eaff;padding:1rem 0;"></div>
+  </div>
+</section>
+
+<!-- Then add this in your <script> tag or external JS file -->
+<script>
+const quotes = [
+  {
+    text: "failure is simply the opportunity to begin again, this time more intelligently.",
+    author: "henry ford",
+    image: "https://example.com/fallback1.jpg"
+  },
+  {
+    text: "don’t let what you cannot do interfere with what you can do.",
+    author: "john wooden",
+    image: "https://example.com/fallback2.jpg"
+  },
+  {
+    text: "success is not final, failure is not fatal: it is the courage to continue that counts.",
+    author: "winston churchill",
+    image: "https://example.com/fallback3.jpg"
+  },
+  {
+    text: "you are braver than you believe, stronger than you seem, and smarter than you think.",
+    author: "a.a. milne",
+    image: "https://example.com/fallback4.jpg"
+  }
+  // Add more if you want
+];
+
+function getDailyQuote() {
+  const date = new Date();
+  const index = date.getDate() % quotes.length;
+  return quotes[index];
+}
+
+function displayQuote() {
+  const { text, author, image } = getDailyQuote();
+  document.getElementById("quote-text").textContent = `"${text}"`;
+  document.getElementById("quote-author").textContent = `— ${author}`;
+  document.getElementById("quote-image").src = image;
+}
+
+function renderMoreQuotes() {
+  const moreQuotesDiv = document.getElementById('more-quotes');
+  const dailyIndex = new Date().getDate() % quotes.length;
+  const extraQuotes = quotes.filter((_, i) => i !== dailyIndex);
+  moreQuotesDiv.innerHTML = extraQuotes.map(q => `<div style='margin-bottom:1.2rem;'><blockquote style='color:#6a5acd;font-size:1rem;'>"${q.text}"</blockquote><cite style='color:#888;'>— ${q.author}</cite></div>`).join('');
+}
+document.getElementById('show-more-btn').onclick = function() {
+  const moreQuotesDiv = document.getElementById('more-quotes');
+  if (moreQuotesDiv.style.maxHeight === '0px' || !moreQuotesDiv.style.maxHeight) {
+    renderMoreQuotes();
+    moreQuotesDiv.style.maxHeight = '800px';
+    this.textContent = 'Hide Quotes';
+  } else {
+    moreQuotesDiv.style.maxHeight = '0';
+    this.textContent = 'Show More Quotes';
+  }
+};
+
+displayQuote();
+</script>
+
+<!-- Add these styles to your existing styles.css -->
+<style>
+#daily-quote {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: #f9f9fb;
+}
+
+.quote-box {
+  background-color: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  max-width: 500px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.quote-box img {
+  width: 100%;
+  border-radius: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+blockquote {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #444;
+  margin: 1rem 0;
+}
+
+cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.pastel-btn {
+  background: #ffd6e0;
+  color: #6a5acd;
+  border: none;
+  border-radius: 1rem;
+  padding: 0.7rem 1.3rem;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 2px 8px #f9f9fb;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.pastel-btn:hover {
+  background: #ffe6f2;
+  color: #4b3f72;
+}
+</style>

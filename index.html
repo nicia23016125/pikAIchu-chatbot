@@ -19,12 +19,16 @@
   }
 
   main {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.65); /* softer, more transparent */
     padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    margin: 1rem auto;
+    border-radius: 18px; /* slightly more rounded */
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); /* softer shadow */
+    min-height: 100vh; /* cover full viewport height */
     max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
   }
 
   #risk-map {
@@ -34,22 +38,32 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     margin-top: 1rem;
   }
-  /* Gamification button and modal styles */
+ 
   .gamify-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s;
-  }
+  position: fixed;
+  top: 80px;    /* moved down from 20px */
+  left: 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+  z-index: 1100;
+}
+
+/* adjust quotes button also */
+#quotes-btn.gamify-btn {
+  top: 150px;  /* moved down accordingly */
+  left: 20px;
+  background-color: #ffd6e0;
+  color: #6a5acd;
+}
+
 
   .gamify-btn:hover {
     background-color: #45a049;
@@ -96,6 +110,22 @@
   }
 
   /* Add your custom styles for the gamification dashboard here */
+  .emoji-buttons button {
+  font-size: 2rem;
+  background: #f9f9fb;
+  border: none;
+  border-radius: 1.2rem;
+  margin: 0 0.3rem;
+  padding: 0.7rem 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+  outline: none;
+  image-rendering: crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+}
+.emoji-buttons button:focus {
+  box-shadow: 0 0 0 2px #ffe066;
+}
 </style>
 
 
@@ -122,7 +152,7 @@
       <h1>Heal and Feel with Pikaichu</h1>
       <p>Your gentle mental health buddy 💛</p>
       <div class="cta">
-        <button class="chat-btn" onclick="toggleChat()">Talk to Pikaichu</button>
+        <button class="chat-btn" onclick="openBotpressModal()">Talk to Pikaichu</button>
       </div>
 
 
@@ -153,12 +183,34 @@
     </div>
   </div>
 </div>
-
+<section id="emotion-picker">
+  <h3>How are you feeling today?</h3>
+  <div class="emoji-buttons">
+    <button onclick="setMood('happy')" id="mood-happy">😄</button>
+    <button onclick="setMood('neutral')" id="mood-neutral">😐</button>
+    <button onclick="setMood('sad')" id="mood-sad">😔</button>
+    <button onclick="setMood('angry')" id="mood-angry">😠</button>
+    <button onclick="setMood('anxious')" id="mood-anxious">😰</button>
+  </div>
+  <div id="mood-message" style="margin-top:1rem;font-size:1.1rem;color:#6a5acd;"></div>
+</section>
     </section>
     <!-- Floating Gamification Icon -->
     <button id="gamify-btn" class="gamify-btn" title="Play Tic Tac Toe">
       <span class="gamify-icon">🏆</span>
     </button>
+    <!-- Floating Quotes Button -->
+    <button id="quotes-btn" class="gamify-btn pastel-btn" style="bottom: 90px; right: 20px; background-color: #ffd6e0; color: #6a5acd;" title="Daily Quotes">
+      <span style="font-size: 1.7rem;">📝</span>
+    </button>
+    <!-- Quotes Modal -->
+    <div id="quotes-modal" class="gamify-modal" style="display:none;">
+      <div class="gamify-modal-content" style="background: #fff0fa;">
+        <span class="gamify-close" onclick="closeQuotesModal()">&times;</span>
+        <h2 style="color:#6a5acd;">Daily Motivation</h2>
+        <iframe src="quotes.html" style="width:100%;height:350px;border:none;border-radius:1rem;background:#fff;"></iframe>
+      </div>
+    </div>
     <!-- Gamification Modal Dashboard (single instance, correct order) -->
     <div id="gamify-modal" class="gamify-modal" style="display:none;">
       <div class="gamify-modal-content">
@@ -198,6 +250,7 @@
         <p>Your chats stay between you and Pikaichu.</p>
       </div>
     </section>
+    
   </main>
   <div class="chatbox" id="chatbox">
     <div class="chat-header">💬 Chat with Pikaichu</div>
@@ -209,10 +262,89 @@
       <button onclick="sendMessage()">Send</button>
     </div>
   </div>
+
+  <!-- Botpress Modal -->
+  <div id="botpress-modal" class="gamify-modal" style="display:none;">
+  <div class="gamify-modal-content" style="background:#f7faff;max-width:480px;min-height:520px;">
+    <span class="gamify-close" onclick="closeBotpressModal()">&times;</span>
+    <h2 style="color:#6a5acd;font-size:1.2rem;margin-bottom:1rem;">Chat with Pikaichu</h2>
+    <iframe src="https://cdn.botpress.cloud/webchat/v3.0/shareable.html?configUrl=https://files.bpcontent.cloud/2025/07/10/02/20250710022215-JH72G88V.json" style="width:100%;height:400px;border:none;border-radius:1rem;background:#fff;"></iframe>
+  </div>
+</div>
+
   <script src="app.js"></script>
   <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
-
+<script>
+// ...existing JavaScript code...
+document.getElementById('quotes-btn').onclick = function() {
+  document.getElementById('quotes-modal').style.display = 'flex';
+};
+function closeQuotesModal() {
+  document.getElementById('quotes-modal').style.display = 'none';
+}
+// ...existing JavaScript code...
+const moodStyles = {
+  happy: {
+    filter: 'brightness(1.03) saturate(1.1)', // softer, not too bright
+    message: 'Glad you feel happy! 🌈',
+    color: '#ffe066'
+  },
+  neutral: {
+    filter: 'brightness(1)',
+    message: 'Feeling neutral is okay. 💙',
+    color: '#b3c2f2'
+  },
+  sad: {
+    filter: 'brightness(0.85) grayscale(0.2)',
+    message: 'It’s okay to feel sad. We’re here for you 💛',
+    color: '#c1b6fc'
+  },
+  angry: {
+    filter: 'brightness(0.95) sepia(0.2)',
+    message: 'Take a deep breath. You’re strong! 💪',
+    color: '#ffb3b3'
+  },
+  anxious: {
+    filter: 'brightness(0.97) sepia(0.08)', // gentle, no blur
+    message: 'Let’s relax together. You’re not alone 💜',
+    color: '#b3e0ff'
+  }
+};
+function setMood(mood) {
+  // Change background filter
+  document.body.style.filter = moodStyles[mood].filter;
+  // Highlight selected emoji
+  document.querySelectorAll('.emoji-buttons button').forEach(btn => {
+    btn.style.background = '';
+    btn.style.boxShadow = '';
+    btn.style.transform = '';
+    btn.style.color = '';
+  });
+  const btn = document.getElementById('mood-' + mood);
+  btn.style.background = moodStyles[mood].color;
+  btn.style.boxShadow = '0 0 10px ' + moodStyles[mood].color;
+  btn.style.transform = 'scale(1.15)';
+  btn.style.color = '#4b3f72';
+  // Show message
+  document.getElementById('mood-message').textContent = moodStyles[mood].message;
+  // Save to localStorage
+  localStorage.setItem('userMood', mood);
+}
+// On page load, restore mood
+window.addEventListener('DOMContentLoaded', () => {
+  const savedMood = localStorage.getItem('userMood');
+  if (savedMood && moodStyles[savedMood]) {
+    setMood(savedMood);
+  }
+});
+function openBotpressModal() {
+  document.getElementById('botpress-modal').style.display = 'flex';
+}
+function closeBotpressModal() {
+  document.getElementById('botpress-modal').style.display = 'none';
+}
+</script>
 </body>
 </html>
