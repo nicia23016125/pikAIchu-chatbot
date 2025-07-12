@@ -15,6 +15,68 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     margin-top: 1rem;
   }
+  /* Gamification button and modal styles */
+  .gamify-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+  }
+
+  .gamify-btn:hover {
+    background-color: #45a049;
+  }
+
+  .gamify-modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gamify-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .gamify-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .gamify-close:hover,
+  .gamify-close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* Add your custom styles for the gamification dashboard here */
 </style>
 
 
@@ -43,8 +105,55 @@
       <div class="cta">
         <button class="chat-btn" onclick="toggleChat()">Talk to Pikaichu</button>
       </div>
+
+
+<!-- Game Modal -->
+<div id="gameModal" class="gamify-modal" style="display:none;">
+  <div class="gamify-modal-content">
+    <span class="gamify-close" onclick="closeGameModal()">&times;</span>
+    <h2>Tic Tac Toe</h2>
+    <div id="game-status" style="margin-bottom:1rem;color:#6a5acd;"></div>
+    <div style="display:flex;gap:2rem;justify-content:center;align-items:flex-start;">
+      <div>
+        <div id="game-board" style="display:grid;grid-template-columns:repeat(3,48px);gap:8px;justify-content:center;margin:1rem auto;"></div>
+        <div id="postGameMsg" style="margin-top:1rem;font-size:1.1rem;color:#6a5acd;display:none;"></div>
+        <button id="playAgainBtn" class="pastel-btn" style="margin-top:1rem;display:none;" onclick="resetTicTacToe()">Play Again</button>
+        <button class="pastel-btn" style="margin-top:1rem;" onclick="openGamifyModal()">View Wellness Dashboard</button>
+      </div>
+      <div style="min-width:120px;">
+        <div id="ttt-chatbox" style="background:#f7faff;border-radius:8px;padding:0.5rem;height:120px;overflow-y:auto;margin-bottom:0.5rem;"></div>
+        <input id="tttMessage" type="text" placeholder="Send a message..." style="width:100%;border-radius:8px;border:1px solid #e0e7ff;padding:0.5rem;">
+        <button class="pastel-btn" onclick="sendTicTacMessage()">Send</button>
+        <div style="margin-top:1rem;font-size:0.95rem;color:#888;">Games played: <span id="gameCount">0</span></div>
+        <div style="margin-top:0.5rem;">
+          <button class="pastel-btn" onclick="sendSupportEmoji('💪')">💪</button>
+          <button class="pastel-btn" onclick="sendSupportEmoji('🌈')">🌈</button>
+          <button class="pastel-btn" onclick="sendSupportEmoji('😊')">😊</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
     </section>
-   
+    <!-- Floating Gamification Icon -->
+    <button id="gamify-btn" class="gamify-btn" title="Play Tic Tac Toe">
+      <span class="gamify-icon">🏆</span>
+    </button>
+    <!-- Gamification Modal Dashboard (single instance, correct order) -->
+    <div id="gamify-modal" class="gamify-modal" style="display:none;">
+      <div class="gamify-modal-content">
+        <span class="gamify-close" onclick="closeGamifyModal()">&times;</span>
+        <h2>Wellness Gamification Dashboard</h2>
+        <div id="gamify-profile">
+          <div class="gamify-streak"></div>
+          <div class="gamify-progress"></div>
+          <div class="gamify-challenges"></div>
+          <button class="pastel-btn journal-btn" id="addJournalBtn" style="margin:1rem auto 0 auto;display:block;" title="Write Today's Entry">Add Journal Entry</button>
+          <div class="gamify-badges"></div>
+        </div>
+      </div>
+    </div>
 
 
     <section class="map-section fade-in">

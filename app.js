@@ -214,6 +214,312 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// GAMIFICATION LOGIC
+function getGamifyUserKey() {
+  const user = JSON.parse(localStorage.getItem('loggedInUser') || 'null');
+  return user ? 'gamify_' + user.email : 'gamify_guest';
+}
+function getGamifyData() {
+  const key = getGamifyUserKey();
+  let data = JSON.parse(localStorage.getItem(key) || '{}');
+  if (!data.streak) data.streak = 0;
+  if (!data.lastEntry) data.lastEntry = '';
+  if (!data.badges) data.badges = [];
+  localStorage.setItem(key, JSON.stringify(data));
+  return data;
+}
+function setGamifyData(data) {
+  localStorage.setItem(getGamifyUserKey(), JSON.stringify(data));
+}
+function addJournalEntry() {
+  const today = new Date().toISOString().slice(0,10);
+  let data = getGamifyData();
+  if (data.lastEntry === today) return false; // already journaled today
+  if (data.lastEntry && (new Date(today) - new Date(data.lastEntry) > 86400000)) {
+    data.streak = 1; // missed a day, reset streak
+  } else {
+    data.streak = (data.streak || 0) + 1;
+  }
+  data.lastEntry = today;
+  // Award badges
+  let badge = null;
+  if (data.streak === 3 && !data.badges.includes('bronze')) badge = 'bronze';
+  if (data.streak === 7 && !data.badges.includes('silver')) badge = 'silver';
+  if (data.streak === 14 && !data.badges.includes('gold')) badge = 'gold';
+  if (data.streak === 30 && !data.badges.includes('platinum')) badge = 'platinum';
+  if (badge) {
+    data.badges.push(badge);
+    showGamifyConfetti();
+    setTimeout(() => { alert(`Awesome! You’ve journaled ${data.streak} days in a row! Badge earned: ${badge}`); }, 500);
+  }
+  setGamifyData(data);
+  renderGamifyDashboard();
+  return true;
+}
+function renderGamifyDashboard() {
+  const data = getGamifyData();
+  const streakDiv = document.querySelector('.gamify-streak');
+  const progressDiv = document.querySelector('.gamify-progress');
+  const badgesDiv = document.querySelector('.gamify-badges');
+  const challengesDiv = document.querySelector('.gamify-challenges');
+  if (!streakDiv || !progressDiv || !badgesDiv || !challengesDiv) return;
+  streakDiv.innerHTML = `Journaling Streak: <strong>${data.streak}</strong> day${data.streak === 1 ? '' : 's'}`;
+  // Progress bar
+  let nextMilestone = 3;
+  if (data.streak >= 3 && data.streak < 7) nextMilestone = 7;
+  else if (data.streak >= 7 && data.streak < 14) nextMilestone = 14;
+  else if (data.streak >= 14 && data.streak < 30) nextMilestone = 30;
+  else if (data.streak >= 30) nextMilestone = 30;
+  let progress = Math.min(data.streak / nextMilestone, 1);
+  progressDiv.innerHTML = `
+    <div class="gamify-progress-bar">
+      <div class="gamify-progress-fill" style="width:${progress*100}%"></div>
+    </div>
+    <div>Progress to next badge: <strong>${data.streak}/${nextMilestone}</strong></div>
+  `;
+  // Badges
+  const badgeMap = {
+    bronze: { emoji: '🥉', label: 'Bronze (3d)' },
+    silver: { emoji: '🥈', label: 'Silver (7d)' },
+    gold: { emoji: '🥇', label: 'Gold (14d)' },
+    platinum: { emoji: '🏆', label: 'Platinum (30d)' }
+  };
+  badgesDiv.innerHTML = '';
+  data.badges.forEach(b => {
+    badgesDiv.innerHTML += `<div class="gamify-badge ${b}">${badgeMap[b].emoji}<span class="badge-label">${badgeMap[b].label}</span></div>`;
+  });
+  // Challenges
+  let challengeMsg = '';
+  if (data.streak < 7) challengeMsg = 'Challenge: Journal every day for 7 days to unlock a secret badge!';
+  else if (data.streak < 14) challengeMsg = 'Challenge: Keep going for 14 days for Gold!';
+  else if (data.streak < 30) challengeMsg = 'Challenge: 30 days for Platinum!';
+  else challengeMsg = 'You’ve completed all streak challenges!';
+  challengesDiv.innerHTML = challengeMsg;
+}
+function showGamifyConfetti() {
+  const modal = document.getElementById('gamify-modal');
+  if (!modal) return;
+  let confetti = document.createElement('div');
+  confetti.className = 'gamify-confetti';
+  confetti.innerHTML = '🎉🎊✨';
+  modal.appendChild(confetti);
+  setTimeout(() => confetti.remove(), 1800);
+}
+function openGamifyModal() {
+  document.getElementById('gamify-modal').style.display = 'flex';
+  renderGamifyDashboard();
+}
+function closeGamifyModal() {
+  document.getElementById('gamify-modal').style.display = 'none';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const gamifyBtn = document.getElementById('gamify-btn');
+  if (gamifyBtn) {
+    gamifyBtn.onclick = openGameModal;
+  }
+  // Add journal entry button to dashboard
+  const modal = document.getElementById('gamify-modal');
+  if (modal) {
+    // Remove any existing journal button to prevent duplicates
+    const existingBtn = modal.querySelector('.gamify-modal-content .pastel-btn.journal-btn');
+    if (!existingBtn) {
+      let journalBtn = document.createElement('button');
+      journalBtn.className = 'pastel-btn journal-btn';
+      journalBtn.style.marginTop = '1rem';
+      journalBtn.textContent = 'Add Journal Entry';
+      journalBtn.onclick = function() {
+        if (addJournalEntry()) {
+          showGamifyConfetti();
+        } else {
+          alert('You already journaled today!');
+        }
+      };
+      modal.querySelector('.gamify-modal-content').appendChild(journalBtn);
+    }
+  }
+});
+
+let currentPlayer = 'X';
+let board = ['', '', '', '', '', '', '', '', ''];
+let gameOver = false;
+let lastMoveIdx = null;
+function openGameModal() {
+  document.getElementById('gameModal').style.display = 'flex';
+  resetTicTacToe();
+}
+function closeGameModal() {
+  document.getElementById('gameModal').style.display = 'none';
+}
+document.getElementById('gameModal').addEventListener('click', function(e) {
+  if (e.target === this) closeGameModal();
+});
+function resetTicTacToe() {
+  board = ['', '', '', '', '', '', '', '', ''];
+  currentPlayer = 'X';
+  gameOver = false;
+  lastMoveIdx = null;
+  createTicTacToeBoard();
+  document.getElementById('postGameMsg').style.display = 'none';
+  document.getElementById('playAgainBtn').style.display = 'none';
+  document.getElementById('game-status').innerText = `Your turn: X`;
+}
+function createTicTacToeBoard() {
+  const boardEl = document.getElementById('game-board');
+  boardEl.innerHTML = '';
+  board.forEach((cell, i) => {
+    const cellEl = document.createElement('div');
+    cellEl.className = 'ttt-cell';
+    cellEl.dataset.index = i;
+    cellEl.innerText = cell;
+    if (lastMoveIdx === i) cellEl.classList.add('last-move');
+    if (!cell && !gameOver) {
+      cellEl.onclick = () => handleCellClick(i);
+    }
+    boardEl.appendChild(cellEl);
+  });
+}
+function handleCellClick(index) {
+  if (board[index] !== '' || gameOver) return;
+  board[index] = currentPlayer;
+  lastMoveIdx = index;
+  createTicTacToeBoard();
+  if (checkWinner()) {
+    document.getElementById('game-status').innerText = `You won!`;
+    document.getElementById('postGameMsg').innerText = `Nice try 🌟 Wanna play again?`;
+    document.getElementById('postGameMsg').style.display = 'block';
+    document.getElementById('playAgainBtn').style.display = 'inline-block';
+    gameOver = true;
+    return;
+  }
+  if (board.every(cell => cell)) {
+    document.getElementById('game-status').innerText = `It's a draw!`;
+    document.getElementById('postGameMsg').innerText = `Great effort! 🌟 Play again?`;
+    document.getElementById('postGameMsg').style.display = 'block';
+    document.getElementById('playAgainBtn').style.display = 'inline-block';
+    gameOver = true;
+    return;
+  }
+  currentPlayer = 'O';
+  document.getElementById('game-status').innerText = `Waiting for bot...`;
+  setTimeout(() => {
+    botMove();
+  }, 700);
+}
+function botMove() {
+  if (gameOver) return;
+  let emptyIndices = board.map((cell, i) => cell === '' ? i : null).filter(i => i !== null);
+  if (emptyIndices.length === 0) return;
+  let idx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+  board[idx] = 'O';
+  lastMoveIdx = idx;
+  createTicTacToeBoard();
+  if (checkWinner()) {
+    document.getElementById('game-status').innerText = `You lost!`;
+    document.getElementById('postGameMsg').innerText = `Kind bot: "You did great! Try again?" 😊`;
+    document.getElementById('postGameMsg').style.display = 'block';
+    document.getElementById('playAgainBtn').style.display = 'inline-block';
+    gameOver = true;
+    return;
+  }
+  if (board.every(cell => cell)) {
+    document.getElementById('game-status').innerText = `It's a draw!`;
+    document.getElementById('postGameMsg').innerText = `Great effort! 🌟 Play again?`;
+    document.getElementById('postGameMsg').style.display = 'block';
+    document.getElementById('playAgainBtn').style.display = 'inline-block';
+    gameOver = true;
+    return;
+  }
+  currentPlayer = 'X';
+  document.getElementById('game-status').innerText = `Your turn!`;
+}
+function checkWinner() {
+  const wins = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+  return wins.some(([a,b,c]) => board[a] && board[a] === board[b] && board[b] === board[c]);
+}
+// Journal button logic
+function addJournalEntry() {
+  const today = new Date().toISOString().slice(0,10);
+  let data = getGamifyData();
+  if (data.lastEntry === today) {
+    alert('You already journaled today!');
+    return false;
+  }
+  if (data.lastEntry && (new Date(today) - new Date(data.lastEntry) > 86400000)) {
+    data.streak = 1;
+  } else {
+    data.streak = (data.streak || 0) + 1;
+  }
+  data.lastEntry = today;
+  let badge = null;
+  if (data.streak === 3 && !data.badges.includes('bronze')) badge = 'bronze';
+  if (data.streak === 7 && !data.badges.includes('silver')) badge = 'silver';
+  if (data.streak === 14 && !data.badges.includes('gold')) badge = 'gold';
+  if (data.streak === 30 && !data.badges.includes('platinum')) badge = 'platinum';
+  if (badge) {
+    data.badges.push(badge);
+    showGamifyConfetti();
+    setTimeout(() => { alert(`Awesome! You’ve journaled ${data.streak} days in a row! Badge earned: ${badge}`); }, 500);
+  }
+  setGamifyData(data);
+  renderGamifyDashboard();
+  return true;
+}
+document.addEventListener('DOMContentLoaded', () => {
+  // Journal button
+  const journalBtn = document.getElementById('addJournalBtn');
+  if (journalBtn) {
+    journalBtn.onclick = addJournalEntry;
+  }
+  // Play Again button
+  const playAgainBtn = document.getElementById('playAgainBtn');
+  if (playAgainBtn) {
+    playAgainBtn.onclick = resetTicTacToe;
+  }
+  // View Wellness Dashboard button in game modal
+  const viewDashboardBtn = document.querySelector('#gameModal .pastel-btn[onclick="openGamifyModal()"]');
+  if (viewDashboardBtn) {
+    viewDashboardBtn.onclick = openGamifyModal;
+  }
+  // Modal close buttons
+  const closeGameBtn = document.querySelector('#gameModal .gamify-close');
+  if (closeGameBtn) {
+    closeGameBtn.onclick = closeGameModal;
+  }
+  const closeGamifyBtn = document.querySelector('#gamify-modal .gamify-close');
+  if (closeGamifyBtn) {
+    closeGamifyBtn.onclick = closeGamifyModal;
+  }
+  // Floating button
+  const gamifyBtn = document.getElementById('gamify-btn');
+  if (gamifyBtn) {
+    gamifyBtn.onclick = openGameModal;
+  }
+  // Chat send button
+  const tttSendBtn = document.querySelector('#gameModal .pastel-btn[onclick="sendTicTacMessage()"]');
+  if (tttSendBtn) {
+    tttSendBtn.onclick = sendTicTacMessage;
+  }
+  // Emoji buttons
+  const emojiBtns = document.querySelectorAll('#gameModal .pastel-btn[onclick^="sendSupportEmoji"]');
+  emojiBtns.forEach(btn => {
+    btn.onclick = function() {
+      sendSupportEmoji(this.textContent);
+    };
+  });
+});
+
+// Track games played
+let gamesPlayed = parseInt(localStorage.getItem('pikaichuGames') || '0');
+gamesPlayed++;
+localStorage.setItem('pikaichuGames', gamesPlayed);
+
+document.getElementById('gameCount').innerText = localStorage.getItem('pikaichuGames') || 0;
+
+
 // Register PWA Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -223,4 +529,47 @@ if ('serviceWorker' in navigator) {
       console.error('SW registration failed:', err);
     });
   });
+}
+
+function sendTicTacMessage() {
+  const msg = document.getElementById('tttMessage').value.trim();
+  if (msg) {
+    const chatbox = document.getElementById('ttt-chatbox');
+    const para = document.createElement('p');
+    para.innerText = `You: ${msg}`;
+    chatbox.appendChild(para);
+    document.getElementById('tttMessage').value = '';
+    chatbox.scrollTop = chatbox.scrollHeight;
+    // Bot reply
+    setTimeout(() => {
+      const botReplies = [
+        "hi let's play!",
+        "let's relax!",
+        "play with me!"
+      ];
+      const botMsg = document.createElement('p');
+      botMsg.innerText = `Bot: ${botReplies[Math.floor(Math.random() * botReplies.length)]}`;
+      chatbox.appendChild(botMsg);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }, 700);
+  }
+}
+function sendSupportEmoji(emoji) {
+  const chatbox = document.getElementById('ttt-chatbox');
+  const para = document.createElement('p');
+  para.innerText = `You: ${emoji}`;
+  chatbox.appendChild(para);
+  chatbox.scrollTop = chatbox.scrollHeight;
+  // Bot reply
+  setTimeout(() => {
+    const botReplies = [
+      "hi let's play!",
+      "let's relax!",
+      "play with me!"
+    ];
+    const botMsg = document.createElement('p');
+    botMsg.innerText = `Bot: ${botReplies[Math.floor(Math.random() * botReplies.length)]}`;
+    chatbox.appendChild(botMsg);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }, 700);
 }

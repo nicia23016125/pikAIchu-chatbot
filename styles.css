@@ -329,7 +329,133 @@ main {
   margin-top: 0.5rem;
 }
 
-
+.gamify-btn {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  z-index: 1200;
+  background: linear-gradient(135deg, #ffe066 60%, #a3c9f7 100%);
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  box-shadow: 0 4px 16px rgba(106, 90, 205, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  animation: gamify-bounce 1.8s infinite;
+  transition: box-shadow 0.3s;
+}
+.gamify-btn:focus {
+  outline: 2px solid #6a5acd;
+}
+.gamify-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px #fff9c4);
+  animation: gamify-glow 2s infinite alternate;
+}
+@keyframes gamify-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes gamify-glow {
+  0% { text-shadow: 0 0 8px #ffe066; }
+  100% { text-shadow: 0 0 16px #a3c9f7; }
+}
+.gamify-modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(60, 60, 100, 0.18);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gamify-modal-content {
+  background: linear-gradient(135deg, #f7faff 80%, #e0e7ff 100%);
+  margin: 0 auto;
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(106, 90, 205, 0.13);
+  width: 90vw;
+  max-width: 600px;
+  min-width: 320px;
+  text-align: center;
+  position: relative;
+}
+.journal-btn {
+  background: linear-gradient(90deg, #ffe066 0%, #a3c9f7 100%);
+  color: #6a5acd;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.7rem 1.6rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+  transition: background 0.3s, transform 0.2s;
+  margin-top: 1rem;
+  position: relative;
+}
+.journal-btn:hover, .journal-btn:active {
+  background: linear-gradient(90deg, #a3c9f7 0%, #ffe066 100%);
+  transform: scale(1.05);
+}
+.journal-btn[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 50%;
+  top: 110%;
+  transform: translateX(-50%);
+  background: #fffbe6;
+  color: #6a5acd;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  white-space: nowrap;
+  z-index: 10;
+}
+#game-board {
+  background: #e0e7ff;
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(48px, 1fr));
+  gap: 8px;
+  max-width: 220px;
+  margin: 0 auto;
+}
+.ttt-cell {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: #f7faff;
+  border-radius: 8px;
+  font-size: 2rem;
+  color: #6a5acd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(106,90,205,0.07);
+  transition: background 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.ttt-cell.last-move {
+  background: #ffe066;
+  box-shadow: 0 0 0 3px #a3c9f7;
+  animation: highlightMove 0.7s;
+}
+@keyframes highlightMove {
+  0% { box-shadow: 0 0 0 0 #a3c9f7; }
+  50% { box-shadow: 0 0 0 6px #ffe066; }
+  100% { box-shadow: 0 0 0 3px #a3c9f7; }
+}
 @media (min-width: 600px) {
   .features {
     grid-template-columns: 1fr 1fr 1fr;
@@ -353,5 +479,21 @@ main {
 @media (min-width: 700px) {
   .discussions-list {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .gamify-modal-content {
+    padding: 1rem;
+    min-width: 90vw;
+  }
+  .gamify-btn {
+    right: 1rem;
+    bottom: 1rem;
+    width: 44px;
+    height: 44px;
+  }
+  .gamify-icon {
+    font-size: 1.5rem;
   }
 }
