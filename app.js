@@ -504,12 +504,76 @@ document.addEventListener('DOMContentLoaded', () => {
     tttSendBtn.onclick = sendTicTacMessage;
   }
   // Emoji buttons
-  const emojiBtns = document.querySelectorAll('#gameModal .pastel-btn[onclick^="sendSupportEmoji"]');
+  const emojiBtns = document.querySelectorAll('#gameModal .pastel-btn[data-mood]');
   emojiBtns.forEach(btn => {
     btn.onclick = function() {
+      setMood(this.getAttribute('data-mood'));
       sendSupportEmoji(this.textContent);
-    };
+    }
   });
+
+// Audio test button logic
+const startMusicBtn = document.getElementById('start-music-btn');
+if (startMusicBtn) {
+  startMusicBtn.addEventListener('click', () => {
+    const audio = document.getElementById('background-music');
+    audio.src = 'https://cdn.pixabay.com/download/audio/2022/03/26/audio_3ae0075d88.mp3?filename=ukulele-sunshine-5932.mp3'; // example audio
+    audio.volume = 0.3;
+    audio.muted = false;
+    audio.play()
+      .then(() => console.log('Audio is playing!'))
+      .catch(e => console.error('Play failed:', e));
+  });
+}
+
+// YouTube Iframe API integration for mood-based music
+let player;
+
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('youtube-player', {
+    height: '0',
+    width: '0',
+    videoId: '', // start empty
+    playerVars: {
+      autoplay: 1,
+      controls: 0,
+      loop: 1,
+      playlist: '', // loop requires playlist param with videoId
+      modestbranding: 1,
+      rel: 0,
+      showinfo: 0,
+      mute: 1 // mute initially to avoid autoplay block
+    },
+    events: {
+      'onReady': onPlayerReady
+    }
+  });
+}
+
+function onPlayerReady(event) {
+  event.target.playVideo();
+}
+
+// Map moods to YouTube video IDs of copyright-free instrumental music
+const moodVideos = {
+  happy: 's9MszVE7aR4',    // example happy instrumental
+  neutral: 'hHW1oY26kxQ',  // chill instrumental
+  sad: 'F58p8csoO6E',      // soft piano
+  angry: 'JGwWNGJdvx8',    // energetic
+  anxious: 'B-RMc9i5AQY'   // relaxing ambient
+};
+
+function setMood(mood) {
+  // Change background filter, message, etc. (your existing code)
+  
+  // YouTube music logic
+  if (typeof player !== 'undefined' && player && moodVideos[mood]) {
+    player.loadVideoById(moodVideos[mood]);
+    player.unMute(); // Unmute to allow sound
+    player.playVideo();
+  }
+}
+
 });
 
 // Track games played
